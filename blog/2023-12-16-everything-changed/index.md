@@ -23,7 +23,7 @@ import myapp from './myapp.png';
 Time to build a **ChatGPT** app to learn how to develop solutions with a new, unified, user experiance.  This will be a feed based UI with a form with 1 input fixed at the bottom, the scrolling feed rendering results both from chatGPT and Mongo. Sounds like a SPA, something like this:
 
 <p align="center">
-<img src={myapp} style={{maxWidth:"600px"}} />
+<img src={myapp}  />
 </p>
 
 So, let get it, starting with my trusty tech stack: `React`, `Node/Typescript`, `Mongo`. Recent times I've added `tRPC` & `zod`
