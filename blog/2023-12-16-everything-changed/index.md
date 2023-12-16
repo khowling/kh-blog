@@ -1,6 +1,6 @@
 ---
 slug: everything-changed
-title: Everyings changed, will I use React again?
+title: Everying's changed. Will I use React again?
 tags: [htmx, react, chatGPT]
 authors: [keith]
 ---
