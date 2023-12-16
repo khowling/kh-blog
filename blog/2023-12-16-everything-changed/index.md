@@ -35,7 +35,7 @@ So, let get it, I'll start with my trusty tech stack of course,  I've used for y
 I look into recent release of React to iterate my stack with the latest guidance from Facebook, the last big update was hooks, and I loved them, no more classes!  
 
 :::tip
-Im a fan of the OSS team at Facebook, I see so much great tech coming from them.  I started using client frameworks with Angular1.x, as I thought you can rely on google for webdev, oh my god, what a mess, I spent 80% of the time understand the framework, and 20% building my app, then the Angular1 ->2.  I haven't used any google OSS projects since (aside from Kubernetes now in CNCF)
+Im a fan of the OSS team at Facebook, I see so much great tech coming from them.  I started using client frameworks with Angular1.x back in the day, as I thought you can rely on google for webdev, oh my god, what a mess, I spent 80% of the time understand the framework, and 20% building my app, then the Angular1 ->2, ugh.  I haven't used any google OSS projects since (aside from Kubernetes now in CNCF)
 :::
 
 **Everything has changed!**  `create-react-app` is no longer recommended, looks like everyone is using **[Vite](https://vitejs.dev/)** for SPAs, and also React is changing from a client side framework to a server side framework
@@ -63,11 +63,11 @@ I'm a little apprehensive about this, looks like this belongs to Vercel, that lo
 
 Anyway, let's get stuck in!  2 days later, I realise this is no longer a great choice for my app.  I thought I could append server components into the feed,   allowing me to use await on the server to query mongo or chatGPT and returning html to append into the feed, but, I hit 2 big issues:
 
-	* "You cannot import a Server Component into a Client Component" &  "Server Components don’t have lifecycle events (hooks / effects / refs etc)"  This is massive!  No matter how I tried to architect my app, I hit a brick wall. I couldn’t addend server components to by feed UI  that was a client component.  I couldn’t turn the feed into a server component because it needed state.  So I made everything a client component, and using the api folder. It worked, but what was the point of Next Server Components now.
+	* "You cannot import a Server Component into a Client Component" &  "Server Components don’t have lifecycle events (hooks / effects / refs etc)"  This is massive!  No matter how I tried to architect my app, I hit a brick wall. I couldn’t append Server Components to by feed UI  that was a Client Component.  I couldn’t turn the feed into a Server Component because it needed state.
 	* I didn’t really want or need a filesystem based router
 	
 
-Everything as a client component, and api routes worked, so I proceeded.  But I wasn’t happy! 
+So I made everything a Client component, and using the api folder for server data. It worked, but what value was NextJs now.  I wasn’t happy, this was shambles!  
 
 ### <span className="logo small">&lt;<b>/</b>&gt; htm<b>x</b></span>
 

@@ -3,7 +3,7 @@ import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
-  title: 'Keith\'s (partly informed) takes',
+  title: 'Keith\'s (partially-informed) takes',
   tagline: 'Somewhere between an Architect and Engineer, but 100% in the cloud',
   favicon: 'img/favicon.ico',
 
@@ -53,7 +53,7 @@ const config: Config = {
     // Replace with your project's social card
     image: 'img/meintherain.png',
     navbar: {
-      title: 'Keith Howling',
+      title: 'Cloud takes',
       logo: {
         alt: 'My Site Logo',
         src: 'img/meintherain.svg',
