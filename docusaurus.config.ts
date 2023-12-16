@@ -3,7 +3,7 @@ import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
-  title: 'Keith\'s (partially-informed) takes',
+  title: 'Cloud dev takes',
   tagline: 'Somewhere between an Architect and Engineer, but 100% in the cloud',
   favicon: 'img/favicon.ico',
 
