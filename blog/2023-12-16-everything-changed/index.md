@@ -8,38 +8,41 @@ authors: [keith]
 
 import reactlogo from './logo192.png';
 import nextlogo from './nextjs.png';
+import myapp from './myapp.png';
 
 ## Starting a new Project in 2024
-
-<table className="logotable" cellspacing="0" cellpadding="0">
-<tr className="logotable">
-    <td className="logotable"><img src={reactlogo} style={{width:"150px"}} /></td>
-    <td className="logotable"><img src={nextlogo} style={{width:"200px"}} /></td>
-    <td className="logotable"><span style={{margin: "0 15px"}} class="vite">Vite</span></td>
-    <td className="logotable"><div className="logo">&lt;<b>/</b>&gt; htm<b>x</b></div></td>
-</tr>
-</table>
+<div className="flex-container">
+<img src={reactlogo} style={{maxWidth:"70px"}} />
+<img src={nextlogo} style={{maxWidth:"110px"}} />
+<span  class="vite">Vite</span>
+<div className="logo">&lt;<b>/</b>&gt; htm<b>x</b></div>
+</div>
 
 
-Time to build a **ChatGPT** app to learn how to develop solutions for around a new user experiance.  This will be a feed based UI with a form with 1 input fixed at the bottom, the scrolling feed rendering results both from chatGPT and Mongo. Sounds like a SPA
 
-So, let get it, I'll start with my trusty tech stack of course,  I've used for years & it's been delivering!: `React`, `Node/Typescript`, `Mongo`. Recent times I've added `tRPC`
+Time to build a **ChatGPT** app to learn how to develop solutions with a new, unified, user experiance.  This will be a feed based UI with a form with 1 input fixed at the bottom, the scrolling feed rendering results both from chatGPT and Mongo. Sounds like a SPA, something like this:
+
+<p align="center">
+<img src={myapp} style={{maxWidth:"600px"}} />
+</p>
+
+So, let get it, starting with my trusty tech stack: `React`, `Node/Typescript`, `Mongo`. Recent times I've added `tRPC` & `zod`
 
 
 
 :::tip
-	I like making the server/browser interface as simple as possible, in fact I'm a big advocate of "Complexity Kills", so I try not to abstract, inject, configure unless necessary.  Hence I've stayed clear of graphQL & I think that’s been a good call.
+	This makes the server/browser development as simple as possible, same language, same types, in fact I'm a big advocate of "Complexity Kills" even in the enterprise, so I try not to abstract, inject, complicate unless necessary.  I've stayed clear of graphQL that's been a good call so far.
 :::
 
 ## Everything has Changed
 
-I look into recent release of React to iterate my stack with the latest guidance from Facebook, the last big update was hooks, and I loved them, no more classes!  
+looking into recent release of React to iterate my stack with the latest updates, I see **big** changes. The last big update was hooks, and I loved them, so lets dive in!  
 
 :::tip
-Im a fan of the OSS team at Facebook, I see so much great tech coming from them.  I started using client frameworks with Angular1.x back in the day, as I thought you can rely on google for webdev, oh my god, what a mess, I spent 80% of the time understand the framework, and 20% building my app, then the Angular1 ->2, ugh.  I haven't used any google OSS projects since (aside from Kubernetes now in CNCF)
+Big fan of the OSS team at Facebook, I see so much great tech coming from them.  I started using client frameworks with Angular1.x back in the day, as I thought I could rely on google for webdev guidence, but, oh my god, what a mess, I spent 80% of the time understand the framework, and 20% building my app, then the Angular2 upgrades, ugh.  I haven't used any google OSS projects since (aside from Kubernetes now in CNCF), but I hear the latest Angular is much improved.
 :::
 
-**Everything has changed!**  `create-react-app` is no longer recommended, looks like everyone is using **[Vite](https://vitejs.dev/)** for SPAs, and also React is changing from a client side framework to a server side framework
+`create-react-app` is no longer recommended, looks like everyone is using **[Vite](https://vitejs.dev/)** for SPAs, and also, the biggest change of all, React has become a Server Side framework!
 
 
 ### <span class="vite small" >Vite</span>
@@ -56,19 +59,19 @@ OK, so as we are going to be doing a lot of calls to the server for each render,
 
 ### NextJs
 
-OK, to use React Server Components (that look awesome), now I need a **?meta framework?**, ok, **[Next.js](https://nextjs.org/)** looks like the frontrunner.  
+OK, more reading later, to use React Server Components (that look awesome), I now need a **Meta-framework?**, cannot just use React anymore. Ok, **[Next.js](https://nextjs.org/)** looks like the frontrunner.  
 
 :::warning
-I'm a little apprehensive about this, looks like this belongs to Vercel, that looks to be an opinionated cloud hosting provider .  I want to deploy to non-opinionated hyper-scale cloud, so concerned the roadmap will be about getting Nextjs to run really well on Vercel or its edge, not my use-case.
+I was a little apprehensive about this, Next belongs to Vercel, that looks to be an opinionated cloud hosting provider .  I want to deploy to non-opinionated service on a hyper-scale cloud, so concerned the Next roadmap will be focused on getting it to run really well on Vercel, or its edge.  This is not my use-case.
 :::
 
-Anyway, let's get stuck in!  2 days later, I realise this is no longer a great choice for my app.  I thought I could append server components into the feed,   allowing me to use await on the server to query mongo or chatGPT and returning html to append into the feed, but, I hit 2 big issues:
+Anyway, let's get stuck in!  2 days later, I realise this is no longer a great choice for my app.  I thought I could append server components into the feed,   allowing me to use await on the server to query mongo or chatGPT and returning html via JSX to append into the feed, but, I hit 2 big issues:
 
-	* "You cannot import a Server Component into a Client Component" &  "Server Components don’t have lifecycle events (hooks / effects / refs etc)"  This is massive!  No matter how I tried to architect my app, I hit a brick wall. I couldn’t append Server Components to by feed UI  that was a Client Component.  I couldn’t turn the feed into a Server Component because it needed state.
+	* "You cannot import a Server Component into a Client Component" &  "Server Components don’t have lifecycle events (hooks / effects / refs etc)"  **This is massive**  No matter how I tried to architect my app, I hit a brick wall. I couldn’t append Server Components to my feed UI Client Component.  I couldn’t turn the feed into a Server Component because it needed state.
 	* I didn’t really want or need a filesystem based router
 	
 
-So I made everything a Client component, and using the api folder for server data. It worked, but what value was NextJs now.  I wasn’t happy, this was shambles!  
+So I made everything a Client component, and using the API Routes for fetching the server data. It worked, but what value was NextJs now.  I wasn’t happy, this was shambles!  
 
 ### <span className="logo small">&lt;<b>/</b>&gt; htm<b>x</b></span>
 

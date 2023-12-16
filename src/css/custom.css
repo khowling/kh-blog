@@ -30,8 +30,12 @@
 }
 
 
-.logotable {
-  border: none !important
+.flex-container {
+  max-width: 600px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
 }
 
 .logo {
@@ -52,16 +56,15 @@
 }
 
 .vite {
-    background: -webkit-linear-gradient( 120deg, #bd34fe 30%, #41d1ff );
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    line-height: 64px;
-    font-size: 56px;
-    letter-spacing: -.4px;
-    line-height: 40px;
-    font-size: 32px;
-    font-weight: 700;
-    white-space: pre-wrap;
-
+  align-self: center;
+  background: -webkit-linear-gradient( 120deg, #bd34fe 30%, #41d1ff );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 64px;
+  font-size: 42px;
+  letter-spacing: -.8px;
+  line-height: 40px;
+  font-weight: 700;
+  white-space: pre-wrap;
 }
