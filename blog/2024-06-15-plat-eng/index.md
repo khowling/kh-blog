@@ -83,19 +83,21 @@ Lastly, yes, ensure the use of [Identity & Automation](https://learn.microsoft.c
 This article doesn't cover Namespace vending on a shared AKS cluster, I've seen a number of companies do this very well when there is a Kubernetes-first/only approach to the public cloud, in highly regulated industries, but it does need more engineering beyond the scope of this article, using AKS as a building block.  scale-to-zero container services like azure container apps is a great alternative that can be simply deployed into single team environment
 :::
 
-### 3. A little less Documentation & a little more sample repos
+### 3. A little less documentation & a little more sample repos
 
-You will notice that our environment provisioning doesn’t make any assumptions about the application teams solution architecture, don’t couple the environment provisioning with the application provisioning, don’t make the application team deploy a AKS cluster to stand up a Static webapp.  This is not optimal use of the public cloud, it will not optimize your public cloud costs, nor minimize the required operation to support a product/app. Equally, don’t assume the structure or number of repo's needed.
+Our environment provisioning provides the application teams a blank slate at this stage, it doesn’t make any assumptions about the application teams solution architecture, this will allow the application team to select the optimal services for their use-cases, that could be a microservices app or a integration workflow, or a simple static webapp.  selecting the appropriate service for the use-case will make the best use of the public cloud, optimize your public cloud costs while minimizing the required operation to support your application. Equally, it don’t assume the structure or number of repo's that the application team will use.
 
-Rather than documents, start to foster a innersource repo of samples, that can be simply provisioned into the vended environment, to show what a static webapp, or a simple microservices app, or an event driven process, or a integration workflow could look like.
+However, we should be providing the application teams more support than just a blank canvas, we should be looking to share successful architecture patterns, example applications that have already been approved for use within your organization.
 
-These examples, with good READMEs can also inform the teams how to structure there application team repos.  
+Rather than documents, start to foster a innersource repo of samples, that can be simply provisioned into the vended environment, to show what a static webapp, or a simple microservices app, or an event driven process, or a integration workflow could look like.  This can provide new teams a starting point with built in approved patterns to accelerated their journey to production. These examples, with good READMEs can also inform the teams how to structure there application team repos with the infrastructure-as-code, and automation deployment workflows.  
 
-Look at the [Azure Developer CLI templates](https://learn.microsoft.com/azure/developer/azure-developer-cli/azd-templates?tabs=csharp) is a good example of this, I'm not saying you should use this tool, but `azd template list` shows this can look like (see screenprint),  there are way too many here, but you can start to create a cut down curated list that demonstrates getting started repos in each of the application solution categories.
+Look at the [Azure Developer CLI templates](https://learn.microsoft.com/azure/developer/azure-developer-cli/azd-templates?tabs=csharp) us a good example of this, I'm not saying you should use this tool, but `azd template list` shows a list of sample application patterns with well documented, structured repos. You can start to create a curated list that demonstrates getting started repos in each of the application solution categories for your organisation, even starting with some of these samples where relevant.
 
 ![alt text](image.png)
 
-Another thing to notice/adopt, in these samples repo ```/infra``` folders, their bicep is just composing a number of modules, these modules represent the 'right' way of configuring each service for your organization, for example, pre-configured with private endpoints and rbac base access.  To build a repo of these modules approved for use in your organization is recommended, you can also get started by using [Azure Verified Modules](https://azure.github.io/Azure-Verified-Modules/)
+#### Infrastructure-as-code modules
+
+Another thing to notice/adopt, in these samples repo ```/infra``` folders, their main bicep file is just composing a number of modules, these modules represent the 'right' way of configuring each service for your organization, for example, pre-configured with private endpoints and RBAC based access and so on.  You can look to build a repo of these modules approved for use in your organization to again, accelerate your application teams. You can also get started by using [Azure Verified Modules](https://azure.github.io/Azure-Verified-Modules/), or build your own [bicep module library](https://learn.microsoft.com/azure/azure-resource-manager/bicep/quickstart-private-module-registry?tabs=azure-cli), using inner-sourcing, sharing this between the application teams.
 
 
 ### 4. Tooling / Local loop development
@@ -105,20 +107,20 @@ Application teams experiment in the portal, develop locally, and provision from 
 Ensure the teams can install/configure  VS code /  VS code extensions / command line tools / docker locally, and they have connectivity from these tools to the public cloud APIs they need. 
 
 
-[```@azure/identity```](https://learn.microsoft.com/en-gb/azure/aks/workload-identity-overview#azure-identity-client-libraries) libraries are now brilliant! Most of the time, there is no need any more to use API keys or credentials that need to be rotated, we now just use Identities & RBAC.  Using these identity libraries, If the developer wants to run their code locally, and connect to a database in azure, the locally running app will operate with the local developers corporate identity (as per 'az login'), and as long as the dev has the appropriate RBAC on the database, all good.  If they deploy their app to Azure PaaS Service, without any code changes, the code will access the database using the services managed identity.  This makes the apps secure and resilient, and can be prompted up to production securely.
+[```@azure/identity```](https://learn.microsoft.com/en-gb/azure/aks/workload-identity-overview#azure-identity-client-libraries) libraries are now brilliant! For many dependencies, there is no need any more to use API keys or credentials that need to be stored in key-vault's & rotated periodically, now, just use your EntraID's corporate identity or a Managed Identity with RBAC.  Using these identity libraries, If the developer wants to run their code locally, and connect to a database or message service in azure, the locally running app will operate with the local developers corporate identity (obtained through `az login`), and as long as the dev has the appropriate RBAC on the database, all good.  If they deploy their app to Azure PaaS Service, without any code changes, the code will access the database using the services managed identity.  This makes the apps secure and resilient, and can be prompted up to production securely.
   
 
-Without these tools and access, the application teams will not be writing the most secure way of coding their app. Another example where restricting application teams access can lower the security of their resulting workflows & applications.
+Without these tools and access, the application teams will not be writing the most secure way of coding their app.
 
 
 ### 5. Track Metrics
 
 Track anything that causes friction.  Anytime the application team is waiting on something, a case, access to a service, resolving a bug, track it, dashboard it, and constantly priorities securely removing friction.  Promote the creation of issues on the platform teams repo, keep a prioritized backlog. Hold monthly feedback sessions.
 
-Application teams will try to work around issues to ship their product, this can mean using the wrong environment, or using a less than ideal service or configuration, this hides inherent issues with the platform.
+If Application teams are held up, they will try to work around issues to ship their product, this can mean using the wrong environment, or using a less than ideal service or configuration.  So removing friction will result in better, more secure use of the public cloud.
 
 
 ## Wrapup
 
-Let me know what you think of these recommendations, if you are in a application team deploying to Azure, have a chat with the team providing you the environment, put in a monthly sync.  Its important the teams collaborate to get your companies products out the door, security, reliably and on time. 
+Let me know what you think of these recommendations, if you are in a Platform team supporting Azure, I'd love to hear your experiences.  If you are in a Application Team deploying to Azure, have a chat with the team providing you the environment, show them this blog, setup a regular call, its important the teams collaborate to get your companies products out the door, security, reliably and on time. 
 
