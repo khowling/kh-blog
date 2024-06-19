@@ -79,9 +79,6 @@ Many applications will need users to authenticate, and the best way of doing tha
 #### Recommendation #4
 Lastly, yes, ensure the use of [Identity & Automation](https://learn.microsoft.com/azure/developer/github/connect-from-azure) for deployments in Production environments, but don’t take away access to the portal from your application teams! Grant your application team corporate identities roles in the environment.  Not granting this access, especially in the lower environments will make it much harder for the teams.
 
-:::note
-This article doesn't cover Namespace vending on a shared AKS cluster, I've seen a number of companies do this very well when there is a Kubernetes-first/only approach to the public cloud, in highly regulated industries, but it does need more engineering beyond the scope of this article, using AKS as a building block.  scale-to-zero container services like azure container apps is a great alternative that can be simply deployed into single team environment
-:::
 
 ### 3. A little less documentation & a little more sample repos
 
@@ -99,6 +96,12 @@ Look at the [Azure Developer CLI templates](https://learn.microsoft.com/azure/de
 
 Another thing to notice/adopt, in these samples repo ```/infra``` folders, their main bicep file is just composing a number of modules, these modules represent the 'right' way of configuring each service for your organization, for example, pre-configured with private endpoints and RBAC based access and so on.  You can look to build a repo of these modules approved for use in your organization to again, accelerate your application teams. You can also get started by using [Azure Verified Modules](https://azure.github.io/Azure-Verified-Modules/), or build your own [bicep module library](https://learn.microsoft.com/azure/azure-resource-manager/bicep/quickstart-private-module-registry?tabs=azure-cli), using inner-sourcing, sharing this between the application teams.
 
+
+#### Kubernetes namespace vending
+
+:::note
+This article doesn't cover Namespace vending on a large, shared AKS clusters.  I've seen this pattern working very well in organizations with a Kubernetes-first approach to the public cloud, or organizations with a strong will for cloud agnostic solutions, however, this requires additional engineering beyond the scope of this article using AKS + other tooling. There is great session from [2024 Build](https://www.youtube.com/watch?v=mGq442iwAF0) on building this service. However, providing example solution patterns for scale-to-zero microservices using [Azure Container Apps](https://learn.microsoft.com/azure/container-apps/), or for more complex needs, [AKS Automatic](https://learn.microsoft.com/azure/aks/intro-aks-automatic). These are great to add to your library of solution patterns that can be provisioned by your application teams that keep the complexity low, while providing a example pattern for the most sophisticated of application needs.
+:::
 
 ### 4. Tooling / Local loop development
 
