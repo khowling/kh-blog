@@ -23,16 +23,13 @@ You don't need to have everything automated from day 1, nor have tooling for eve
 
 ### 1. Environment Provisioning 
 
-When a application team works on a new product, timely access to an environment is important when enthusiasm is high.  You should be targeting giving teams access to an environment they can use within 30mins from the initial request.
+When a application team works on a new product, timely access to an environment is important when enthusiasm is high. We should be targeting giving access to a fully operational environment within 30mins from the initial request.  Vending a [Resource Group](https://learn.microsoft.com/azure/azure-resource-manager/management/manage-resource-groups-portal#what-is-a-resource-group) to the application team with all the access they need to immediatly start deploying their solution designs.  The resource group naming, tagging, the subscription sharing model and level of access can all be determined base on the environment requested.
 
-This would look like vending [Resource Groups](https://learn.microsoft.com/azure/azure-resource-manager/management/manage-resource-groups-portal#what-is-a-resource-group) within shared Subscriptions, provisioning new Subscription, when needed with a good tagging model.
-
+Subscription sharing model can be designed to avoid too much subscription sprawl, based on department, or other organisational commonalities, but subscription separation should be enforced at minimum on workload type and connectivity (more on this below). You then end up with a subscription list that is meaningful and manageable. There are a number of good resources on [naming recommendations](https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming)
 
 :::tip
-Subscriptions now in Azure can support hundreds of developers, the subscriptions have granular role-based controls, mature cost tracking services, and you can now track [Subscription Limits](https://learn.microsoft.com/azure/azure-resource-manager/management/azure-subscription-service-limits#subscription-limits) & usage very effectively.  
+Subscriptions now in Azure can support hundreds of developers, the subscriptions have granular role-based controls, mature cost tracking services, and you can now track [Subscription Limits](https://learn.microsoft.com/azure/azure-resource-manager/management/azure-subscription-service-limits#subscription-limits) & usage very effectively.  We recently had 300 developers across 35 resource groups, deploying resources across the globe,  all working happily in a single sandbox subscription.
 :::
-
-This can avoid Subscription sprawl, so you end up with a list that is meaningful and manageable. There are a number of good resources on [naming recommendations](https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming)
 
 During the vending process, it will be important to capture:
  * Workload Type (e.g. __Production vs Sandbox__),  this drives the policies that are applied to control what can be deployed & levels of access, and keeps the separation between these environments. Keep the separation of any Production and Sandbox environments should be at the subscription level.
@@ -41,21 +38,21 @@ During the vending process, it will be important to capture:
 The first, simplest, most unconstrained environment you should offer is a  Non-connected Sandbox, this allows the application teams the most flexibility to experiment with multiple services, full access to the environment in the portal to allow the team to rapidly get ideas to a POC stage. Here typically, there are no or little restrictions on access or resources that can be provisioned. The most constrained, and complex environment will be a Connected Production subscription, this will have policies to ensure production guardrails are followed, and networking to allow private IP connectivity, and ingress/egress routing controls (if needed).
 
 :::tip
-The new [Subscription Vending Bicep Verified Module](https://github.com/Azure/bicep-registry-modules/tree/main/avm/ptn/lz/sub-vending) is a excellent starting point to start vending these environments, from the simplest to the most complex with a module & parameter driven approach.  You can collect the required information from the application team, then call the vending module directly from the `az cli` to start with, or create a pipeline/action in your favorite devops tool, maybe trigger a GitHub workflow from a Issue template:
+The new [Subscription Vending Bicep Verified Module](https://github.com/Azure/bicep-registry-modules/tree/main/avm/ptn/lz/sub-vending) is a excellent starting point to start vending these environments, from the simplest to the most complex with a module & parameter driven approach.  You can collect the required information from the application team, then call the vending module directly from the `az cli` to start with, or create a pipeline/action in your favourite devops tool, maybe trigger a GitHub workflow from a Issue template:
 
 ![alt text](example-issue.png)
 :::
 
 
 :::tip
-__Hot Take #1__:   I'd recommend Bicep over Terraform every time when automating environment provisioning or application deployment on Azure, even if you are multi-cloud! It's a simple, powerful, performant 1st class experience,  without needing the complexities of a state file, as the state is whatever is deployed in azure, and templates can be re-run and only the changes will be deployed. 
+__Hot Take #1__:   I'd recommend Bicep over Terraform when automating environment provisioning or application deployment on Azure, even if you are multi-cloud, it's a simple, powerful, performant 1st class experience,  without needing the complexities of a state file, as the state is whatever is deployed in azure, and templates can be re-run and only the changes will be deployed. 
 :::
 
 
 
 ### 2. Environment Permissions
 
-So you have vended an environment, the app team tried to provision their first internally authenticated webapp that calls a OpenAI gpt-4o model using identity based access, deployed using github actions...  <span style={{color: 'red'}}>error error error</span> 4 tickets in 5 minutes, now the team are googling for workarounds, not delivering their projects, wasting valuable time, and enthusiasm.  Whats the problem?
+So you have vended an environment, the app team tried to provision their first internally authenticated webapp that calls a gpt-4o model using identity based access, deployed using github actions...  <span style={{color: 'red'}}>error error error</span> 4 tickets in 5 minutes, now the team are googling for workarounds, not delivering their projects, wasting valuable time, and enthusiasm.  Whats the problem?
 
 	* No permissions to create a [Role Assignment](https://learn.microsoft.com/azure/role-based-access-control/role-assignments) on the webapp managed identity
 	* OpenAI resource not [registered](https://learn.microsoft.com/azure/azure-resource-manager/troubleshooting/error-register-resource-provider?tabs=azure-portal) in subscription
@@ -68,10 +65,10 @@ When building cloud native apps, __managed identity and role based access__ is a
 Platform teams __must__ provide the appropriate level of access to the application team to allow these solution architectures.  I've seen this being the single thing that wastes tens/hundreds of hours of skilled peoples time
 
 #### Recommendation #1
-When assigning roles to the application team, ```Contributor``` is not enough to create identity-based solution architectures! Look to provide the team ```Contributor``` &  ```Role Based Access Control Administrator```, this role can be scoped to either the resource group or the subscription (depending on what you are vending), and can be further [limited](https://learn.microsoft.com/azure/role-based-access-control/role-assignments-portal#step-5-(optional)-add-condition) to only assign selected roles to selected principals.
+When assigning roles to the application team, ```Contributor``` is not enough to create identity-based solution architectures! Consider providing the team ```Contributor``` &  ```Role Based Access Control Administrator```, this role can be scoped to either the resource group, and can be further [limited](https://learn.microsoft.com/azure/role-based-access-control/role-assignments-portal#step-5-(optional)-add-condition) to only assign selected roles to selected principals.
 
 #### Recommendation #2
-If vending Resource Groups, ensure resource provider [registrations](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#register-resource-provider) have been done as part of the vending process, and not blocking the application teams from creating their resources.
+Ensure resource provider [registrations](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#register-resource-provider) have been done as part of the vending process, and not blocking the application teams from creating their resources.
 
 #### Recommendation #3
 Many applications will need users to authenticate, and the best way of doing that is with Entra ID.  These apps need [application registrations](https://learn.microsoft.com/entra/identity-platform/quickstart-register-app) within EntraID, if your organization blocks the self-service creation of new application registrations, and/or has restrictive consent granting.  Ensure the team know the process for requesting a new application registration. Also, unless you want a new Service now ticket every time the app team what to add a new callback uri, make then a owner of the app registration in the process.
