@@ -10,9 +10,9 @@ Working with applications teams and partners developing cloud native apps on Azu
 
 Whenever an application team has to _wait_ for an environment, _wait_ for a access, a service now ticket, a support case, admin access to install tooling, productivity is dramatically effected, projects can be 2x longer and of lower quality
 
-Equally, it's important to have a designed, governed environment when using the public cloud, so your workload teams start right, and stay right! This covers all the normal design pillars of a well architected solution, reliability, security, cost and performance.   
+Equally, it's important to have a designed, governed secure environment when using the public cloud, so your workload teams start right, and stay right! This covers all the normal design pillars of a well architected solution, reliability, security, cost and performance.   
 
-Application teams work best when they can select their preferred platform services, tooling, languages and libraries, and most importantly, reduce their dependencies & constraints. To this end, platform teams number one priority should be to work towards a self-service model, removing themselves from the process, constantly unblock friction points, while meeting the application teams where they are, rather than imposing platform and tooling assumptions.  
+Application teams work best when they can select their preferred platform services, tooling, languages and libraries, and most importantly, reduce their dependencies on external requests & constraints that limit their selection of services. To this end, platform teams number one priority should be to work towards a self-service model, removing themselves from the process, constantly unblock friction points.  
 
 
 ## Where Platform teams should focus
