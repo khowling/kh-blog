@@ -8,7 +8,7 @@ authors: [keith]
 
 Working with applications teams and partners developing cloud native apps on Azure, you quickly learn developer time is valuable, enthusiasm & flow state is critically important. 
 
-Whenever an application team has to _wait_ for an environment, _wait_ for a access, a service now ticket, a support case, admin access to install tooling, productivity is dramatically effected, projects can be 2x longer and of lower quality
+Whenever an application team has to _wait_ for an environment, _wait_ for a access, a service now ticket, a support case, admin access to install tooling, productivity is dramatically effected, projects can be 2x longer and of lower quality.
 
 Equally, it's important to have a designed, governed secure environment when using the public cloud, so your workload teams start right, and stay right! This covers all the normal design pillars of a well architected solution, reliability, security, cost and performance.   
 
@@ -23,22 +23,24 @@ You don't need to have everything automated from day 1, nor have tooling for eve
 
 ### 1. Environment Provisioning 
 
-When a application team works on a new product, timely access to an environment is important when enthusiasm is high. We should be targeting giving access to a fully operational environment within 30mins from the initial request.  Vending a [Resource Group](https://learn.microsoft.com/azure/azure-resource-manager/management/manage-resource-groups-portal#what-is-a-resource-group) to the application team with all the access they need to immediatly start deploying their solution designs.  The resource group naming, tagging, the subscription sharing model and level of access can all be determined base on the environment requested.
+When an application team works on a new product, timely access to an environment is important when enthusiasm is high. We should be targeting giving access to a fully operational environment within 30 minutes.  This typically means vending a [Resource Group](https://learn.microsoft.com/azure/azure-resource-manager/management/manage-resource-groups-portal#what-is-a-resource-group) with all the access they need to immediately start deploying their solution designs (more on this later).  The resource group naming, tagging, the subscription sharing model and level of access can all be determined base on the environment requested.
 
-Subscription sharing model can be designed to avoid too much subscription sprawl, based on department, or other organisational commonalities, but subscription separation should be enforced at minimum on workload type and connectivity (more on this below). You then end up with a subscription list that is meaningful and manageable. There are a number of good resources on [naming recommendations](https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming)
+The subscription sharing model can be designed to avoid too much subscription sprawl, based on department, or other organisational commonalities, but subscription separation should be enforced on workload type and connectivity (more on this below). You then end up with a subscription list that is meaningful and manageable. There are a number of good resources on [naming recommendations](https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming)
 
 :::tip
-Subscriptions now in Azure can support hundreds of developers, the subscriptions have granular role-based controls, mature cost tracking services, and you can now track [Subscription Limits](https://learn.microsoft.com/azure/azure-resource-manager/management/azure-subscription-service-limits#subscription-limits) & usage very effectively.  We recently had 300 developers across 35 resource groups, deploying resources across the globe,  all working happily in a single sandbox subscription.
+Subscriptions in Azure can support hundreds of developers, the subscriptions have granular role-based controls, mature cost tracking services, and you can track [Subscription Limits](https://learn.microsoft.com/azure/azure-resource-manager/management/azure-subscription-service-limits#subscription-limits) & usage very effectively.  We recently had 300 developers across 35 resource groups, deploying resources across the globe,  all working happily in a single sandbox subscription.
 :::
 
 During the vending process, it will be important to capture:
- * Workload Type (e.g. __Production vs Sandbox__),  this drives the policies that are applied to control what can be deployed & levels of access, and keeps the separation between these environments. Keep the separation of any Production and Sandbox environments should be at the subscription level.
- * Required Networking (e.g. __Connected or Non-connected__) this determines if private IP connectivity is required by the workload, or if ingress/egress to the workload needs to be privately routed.
+ * __Workload Type__ (e.g. Production, Non-production, Sandbox):  This determines the policies that are applied to control what can be deployed & levels of access, also, keeps clear separation between these environments.  Production and Non-Product/Sandbox workload types should be on separate subscriptions, however, a single Sandbox subscription can support may teams resource groups.
+ * __Required Networking__ (e.g. Connected or Non-connected):  This determines if private IP connectivity is required by the workload, or if ingress/egress to the workload needs to be privately routed.
 
-The first, simplest, most unconstrained environment you should offer is a  Non-connected Sandbox, this allows the application teams the most flexibility to experiment with multiple services, full access to the environment in the portal to allow the team to rapidly get ideas to a POC stage. Here typically, there are no or little restrictions on access or resources that can be provisioned. The most constrained, and complex environment will be a Connected Production subscription, this will have policies to ensure production guardrails are followed, and networking to allow private IP connectivity, and ingress/egress routing controls (if needed).
+The first, simplest, most unconstrained environment you should offer is a Non-connected Sandbox, this allows the application teams the most flexibility to experiment with multiple services, full access to the environment in the portal to allow the team to rapidly get ideas to a POC stage. Here typically, there are no or little restrictions on access or resources that can be provisioned. The most constrained, and complex environment will be a Connected Production subscription, this will have policies to ensure production guardrails are followed, and networking to allow private IP connectivity, and ingress/egress routing controls (if needed).
+
+ A typical application would require the team to request 3 environments, starting with dev, then test (both non-prod and can share a subscription), and a production environment that would be created with a new subscription, each environment progressively getting more restrictive.
 
 :::tip
-The new [Subscription Vending Bicep Verified Module](https://github.com/Azure/bicep-registry-modules/tree/main/avm/ptn/lz/sub-vending) is a excellent starting point to start vending these environments, from the simplest to the most complex with a module & parameter driven approach.  You can collect the required information from the application team, then call the vending module directly from the `az cli` to start with, or create a pipeline/action in your favourite devops tool, maybe trigger a GitHub workflow from a Issue template:
+The new [Subscription Vending Bicep Verified Module](https://github.com/Azure/bicep-registry-modules/tree/main/avm/ptn/lz/sub-vending) is a excellent starting point to start vending these environments, from the simplest to the most complex with a module & parameter driven approach.  You can collect the required information from the application team, then call the vending module directly from the `az cli` to start with, or create a pipeline/action in your favourite  devops tool, maybe trigger a GitHub workflow from a Issue template:
 
 ![alt text](example-issue.png)
 :::
@@ -52,7 +54,7 @@ __Hot Take #1__:   I'd recommend Bicep over Terraform when automating environmen
 
 ### 2. Environment Permissions
 
-So you have vended an environment, the app team tried to provision their first internally authenticated webapp that calls a gpt-4o model using identity based access, deployed using github actions...  <span style={{color: 'red'}}>error error error</span> 4 tickets in 5 minutes, now the team are googling for workarounds, not delivering their projects, wasting valuable time, and enthusiasm.  Whats the problem?
+So you have vended an environment, the app team tried to provision their first internally authenticated webapp that calls a gpt-4o model using identity based access, deployed using github actions...  <span style={{color: 'red'}}>error error error</span> 4 tickets in 5 minutes, now the team are googling for workarounds, not delivering their projects, wasting valuable time, and enthusiasm.  What's the problem?
 
 	* No permissions to create a [Role Assignment](https://learn.microsoft.com/azure/role-based-access-control/role-assignments) on the webapp managed identity
 	* OpenAI resource not [registered](https://learn.microsoft.com/azure/azure-resource-manager/troubleshooting/error-register-resource-provider?tabs=azure-portal) in subscription
@@ -65,27 +67,29 @@ When building cloud native apps, __managed identity and role based access__ is a
 Platform teams __must__ provide the appropriate level of access to the application team to allow these solution architectures.  I've seen this being the single thing that wastes tens/hundreds of hours of skilled peoples time
 
 #### Recommendation #1
-When assigning roles to the application team, ```Contributor``` is not enough to create identity-based solution architectures! Consider providing the team ```Contributor``` &  ```Role Based Access Control Administrator```, this role can be scoped to either the resource group, and can be further [limited](https://learn.microsoft.com/azure/role-based-access-control/role-assignments-portal#step-5-(optional)-add-condition) to only assign selected roles to selected principals.
+When assigning roles to the application team on non-production/sandbox workloads, ```Contributor``` is not enough to create identity-based solution architectures! Consider providing the team ```Contributor``` &  ```Role Based Access Control Administrator```, this role can be scoped to the resource group, and can be further [limited](https://learn.microsoft.com/azure/role-based-access-control/role-assignments-portal#step-5-(optional)-add-condition) to only assign selected roles to selected principals.
 
 #### Recommendation #2
 Ensure resource provider [registrations](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#register-resource-provider) have been done as part of the vending process, and not blocking the application teams from creating their resources.
 
 #### Recommendation #3
-Many applications will need users to authenticate, and the best way of doing that is with Entra ID.  These apps need [application registrations](https://learn.microsoft.com/entra/identity-platform/quickstart-register-app) within EntraID, if your organization blocks the self-service creation of new application registrations, and/or has restrictive consent granting.  Ensure the team know the process for requesting a new application registration. Also, unless you want a new Service now ticket every time the app team what to add a new callback uri, make then a owner of the app registration in the process.
+Many applications will need end-users to authenticate, and the best way of doing that is with Entra ID.  These apps need [application registrations](https://learn.microsoft.com/entra/identity-platform/quickstart-register-app) within EntraID, if your organization blocks the self-service creation of new application registrations, and/or has restrictive consent granting.  Ensure the team know the process for requesting a new application registration.  Also, unless you want a new Service now ticket every time the app team what to add a new callback uri, make then a owner of the app registration in the process.
 
 #### Recommendation #4
-Lastly, yes, ensure the use of [Identity & Automation](https://learn.microsoft.com/azure/developer/github/connect-from-azure) for deployments in Production environments, but don’t take away access to the portal from your application teams! Grant your application team corporate identities roles in the environment.  Not granting this access, especially in the lower environments will make it much harder for the teams.
+Lastly, for Production deployments, look to remove any reliance on any individuals employee identity, and use automated pipelines/workflows that use Service Principals that have been assigned with an appropriate permissions.  See [Use Github Actions to connect to Azure](https://learn.microsoft.com/azure/developer/github/connect-from-azure).
 
 
 ### 3. A little less documentation & a little more sample repos
 
-Our environment provisioning provides the application teams a blank slate at this stage, it doesn’t make any assumptions about the application teams solution architecture, this will allow the application team to select the optimal services for their use-cases, that could be a microservices app or a integration workflow, or a simple static webapp.  selecting the appropriate service for the use-case will make the best use of the public cloud, optimize your public cloud costs while minimizing the required operation to support your application. Equally, it don’t assume the structure or number of repo's that the application team will use.
+Environment provisioning provides the application teams a blank slate at this stage, it doesn’t make any assumptions about the application teams solution architecture, this will allow the application team to select the optimal services for their use-cases, that could be a microservices app or a integration workflow, or a simple static webapp.  
+
+Selecting the appropriate service for the use-case will make the best use of the public cloud, optimize your public cloud costs while minimizing the required operations to support your application.  Equally, it's doesn't assume the structure or number of repo's that the application team will use.
 
 However, we should be providing the application teams more support than just a blank canvas, we should be looking to share successful architecture patterns, example applications that have already been approved for use within your organization.
 
-Rather than documents, start to foster a innersource repo of samples, that can be simply provisioned into the vended environment, to show what a static webapp, or a simple microservices app, or an event driven process, or a integration workflow could look like.  This can provide new teams a starting point with built in approved patterns to accelerated their journey to production. These examples, with good READMEs can also inform the teams how to structure there application team repos with the infrastructure-as-code, and automation deployment workflows.  
+Rather than documents, start to foster a innersource repo of samples, that can be simply provisioned into the vended environment, to show what a static webapp, or a simple microservices app, or an event driven process could look like.  This can provide new teams a starting point with built-in approved patterns to accelerated their journey to production.  These examples, with good READMEs can also inform the teams how to structure there application team repos with the infrastructure-as-code, and automation deployment workflows.  
 
-Look at the [Azure Developer CLI templates](https://learn.microsoft.com/azure/developer/azure-developer-cli/azd-templates?tabs=csharp) us a good example of this, I'm not saying you should use this tool, but `azd template list` shows a list of sample application patterns with well documented, structured repos. You can start to create a curated list that demonstrates getting started repos in each of the application solution categories for your organisation, even starting with some of these samples where relevant.
+Look at the [Azure Developer CLI templates](https://learn.microsoft.com/azure/developer/azure-developer-cli/azd-templates) as a good example of this, you don't need to use this tool, but `azd template list` shows a list of sample application patterns with well documented, structured repos. You can start to create a curated list that demonstrates getting started repos in each of the application solution categories for your organisation, even starting with some of these samples where relevant.
 
 ![alt text](image.png)
 
@@ -97,7 +101,9 @@ Another thing to notice/adopt, in these samples repo ```/infra``` folders, their
 #### Kubernetes namespace vending
 
 :::note
-This article doesn't cover Namespace vending on a large, shared AKS clusters.  I've seen this pattern working very well in organizations with a Kubernetes-first approach to the public cloud, or organizations with a strong will for cloud agnostic solutions, however, this requires additional engineering beyond the scope of this article using AKS + other tooling. There is great session from [2024 Build](https://www.youtube.com/watch?v=mGq442iwAF0) on building this service. However, providing example solution patterns for scale-to-zero microservices using [Azure Container Apps](https://learn.microsoft.com/azure/container-apps/), or for more complex needs, [AKS Automatic](https://learn.microsoft.com/azure/aks/intro-aks-automatic). These are great to add to your library of solution patterns that can be provisioned by your application teams that keep the complexity low, while providing a example pattern for the most sophisticated of application needs.
+This article doesn't cover Namespace vending on a large, shared AKS clusters.  I've seen this pattern working very well in organizations with a Kubernetes-first approach to the public cloud, or with a strong will for cloud agnostic solutions, however, this requires additional engineering beyond the scope of this article using AKS + other tooling. There is great session from [2024 Build](https://www.youtube.com/watch?v=mGq442iwAF0) on building this service. 
+
+You can provide example solution patterns & repo's for scale-to-zero microservices using [Azure Container Apps](https://learn.microsoft.com/azure/container-apps/), or for more complex needs, [AKS Automatic](https://learn.microsoft.com/azure/aks/intro-aks-automatic). These are great to add to your library of solution patterns that can be provisioned by your application teams that keep the complexity low, while providing example patterns for the most sophisticated of applications.
 :::
 
 ### 4. Tooling / Local loop development
