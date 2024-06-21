@@ -8,24 +8,24 @@ authors: [keith]
 
 Working with applications teams and partners developing cloud native apps on Azure, you quickly learn developer time is valuable, enthusiasm & flow state is critically important. 
 
-Whenever an application team has to _wait_ for an environment, _wait_ for a access, a service now ticket, a support case, admin access to install tooling, productivity is dramatically effected, projects can be 2x longer and of lower quality.
+Over the years, I've seen so many application team have to _wait_ for an environment, _wait_ for a access, a Service Now ticket, a support case, admin access to install tooling, productivity is dramatically effected by interruptions in flow state, projects can be 2x longer and of lower quality.
 
-Equally, it's important to have a designed, governed secure environment when using the public cloud, so your workload teams start right, and stay right! This covers all the normal design pillars of a well architected solution, reliability, security, cost and performance.   
+Equally, it's important to have a designed, governed secure environment when using the public cloud, so your workload teams start right, and stay right! There is excellent documentation on this in the [Cloud Adoption Framework](https://learn.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/). This Blog however, specifically looks at the needs of application teams developing cloud native solutions.   
 
-Application teams work best when they can select their preferred platform services, tooling, languages and libraries, and most importantly, reduce their dependencies on external requests & constraints that limit their selection of services. To this end, platform teams number one priority should be to work towards a self-service model, removing themselves from the process, constantly unblock friction points.  
+Application teams work best when they can select their preferred platform services, tooling, languages and libraries, and most importantly, reduce their dependencies on external requests & constraints that interrupt their workflow. To this end, a priority for any Platform Team (the team providing the environment to application teams) should be to work towards a self-service model, removing themselves from the process wherever possible & constantly unblock friction points.  
 
 
 ## Where Platform teams should focus
 
 
-You don't need to have everything automated from day 1, nor have tooling for everything, but focusing in these 5 crucial elements will result in more impact for everyone in your organization, while avoiding unnecessary tickets/cases and bottlenecks, something I have seen depressingly way to often.
+You don't need to have everything automated from day 1, nor have tooling for everything, but focusing in these 5 crucial elements will result in more impact for everyone in your organization, avoiding unnecessary interruptions & bottlenecks, something I have seen depressingly way to often.
 
 
 ### 1. Environment Provisioning 
 
 When an application team works on a new product, timely access to an environment is important when enthusiasm is high. We should be targeting giving access to a fully operational environment within 30 minutes.  This typically means vending a [Resource Group](https://learn.microsoft.com/azure/azure-resource-manager/management/manage-resource-groups-portal#what-is-a-resource-group) with all the access they need to immediately start deploying their solution designs (more on this later).  The resource group naming, tagging, the subscription sharing model and level of access can all be determined base on the environment requested.
 
-The subscription sharing model can be designed to avoid too much subscription sprawl, based on department, or other organisational commonalities, but subscription separation should be enforced on workload type and connectivity (more on this below). You then end up with a subscription list that is meaningful and manageable. There are a number of good resources on [naming recommendations](https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming)
+A simple subscription sharing model can be designed to avoid too much subscription sprawl, based on department, or other organisational commonalities, but subscription separation should be enforced on workload type and connectivity (more on this below). You then end up with a subscription list that is meaningful and manageable, with resource groups that are named consistently. There are a number of good resources on [naming recommendations](https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming)
 
 :::tip
 Subscriptions in Azure can support hundreds of developers, the subscriptions have granular role-based controls, mature cost tracking services, and you can track [Subscription Limits](https://learn.microsoft.com/azure/azure-resource-manager/management/azure-subscription-service-limits#subscription-limits) & usage very effectively.  We recently had 300 developers across 35 resource groups, deploying resources across the globe,  all working happily in a single sandbox subscription.
@@ -67,17 +67,20 @@ When building cloud native apps, __managed identity and role based access__ is a
 Platform teams __must__ provide the appropriate level of access to the application team to allow these solution architectures.  I've seen this being the single thing that wastes tens/hundreds of hours of skilled peoples time
 
 #### Recommendation #1
-When assigning roles to the application team on non-production/sandbox workloads, ```Contributor``` is not enough to create identity-based solution architectures! Consider providing the team ```Contributor``` &  ```Role Based Access Control Administrator```, this role can be scoped to the resource group, and can be further [limited](https://learn.microsoft.com/azure/role-based-access-control/role-assignments-portal#step-5-(optional)-add-condition) to only assign selected roles to selected principals.
+When assigning roles to the application team on non-production/sandbox resource groups, ```Contributor``` is not enough to create identity-based solution architectures! Consider providing the team ```Contributor``` &  ```Role Based Access Control Administrator```, this role can be scoped to the resource group, and can be further [limited](https://learn.microsoft.com/azure/role-based-access-control/role-assignments-portal#step-5-(optional)-add-condition) to only assign selected roles to selected principals.
 
 #### Recommendation #2
 Ensure resource provider [registrations](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#register-resource-provider) have been done as part of the vending process, and not blocking the application teams from creating their resources.
 
 #### Recommendation #3
-Many applications will need end-users to authenticate, and the best way of doing that is with Entra ID.  These apps need [application registrations](https://learn.microsoft.com/entra/identity-platform/quickstart-register-app) within EntraID, if your organization blocks the self-service creation of new application registrations, and/or has restrictive consent granting.  Ensure the team know the process for requesting a new application registration.  Also, unless you want a new Service now ticket every time the app team what to add a new callback uri, make then a owner of the app registration in the process.
+Many internal applications will need end-users to authenticate with your corporate EntraID tenant, the directory that protects all your Microsoft and 3rd party apps.  These apps need [application registrations](https://learn.microsoft.com/entra/identity-platform/quickstart-register-app), if your organization blocks the self-service creation of new application registrations, and/or has restrictive consent granting.  Ensure the team know the process for requesting a new application registration.  Also, unless you want a new Service Now ticket every time the app team what to add a new `callback uri`, consider adding the application team as an own owner of the app registration.
 
 #### Recommendation #4
-Lastly, for Production deployments, look to remove any reliance on any individuals employee identity, and use automated pipelines/workflows that use Service Principals that have been assigned with an appropriate permissions.  See [Use Github Actions to connect to Azure](https://learn.microsoft.com/azure/developer/github/connect-from-azure).
+For Production deployments, look to remove any reliance on any individuals employee identities by using automated workflows that use __Federated Identity Credential__.  Similar to Managed Identity, this will avoid having to vault/rotate  client secrets in your devops platform (github/ADO), see [Use Github Actions to connect to Azure](https://learn.microsoft.com/azure/developer/github/connect-from-azure).
 
+	:::New
+	Federated Identity Credential can now be provisioned directly in your vending process, using the new [Bicep templates for Microsoft Graph](https://learn.microsoft.com/en-gb/graph/templates/reference/federatedidentitycredentials).  This will help the workload teams start right and stay right!
+	:::
 
 ### 3. A little less documentation & a little more sample repos
 
